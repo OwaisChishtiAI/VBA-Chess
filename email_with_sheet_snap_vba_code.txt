@@ -1,0 +1,21 @@
+Option Explicit
+
+Sub Send_Email_With_snapshot()
+Dim sh As Worksheet
+Set sh = ThisWorkbook.Sheets("snap")
+
+Dim lr As Integer
+lr = sh.Range("A" & Application.Rows.Count).End(xlUp).Row
+
+sh.Range("A1:E" & lr).Select
+
+With Selection.Parent.MailEnvelope.Item
+.to = "soc.solutions.info@gmail.com"
+.Subject = "Sample snap"
+.Attachments.Add "E:\Investment Plans\SOC Solutions\Client's Project\Fiverr\Excel Chess Board\Chess Code\Excel VBA Chess v1.05 25Nov2020.xlsm"
+.Send
+End With
+
+MsgBox "Done"
+
+End Sub

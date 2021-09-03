@@ -1,0 +1,26 @@
+Option Explicit
+
+Private Sub CommandButton1_Click()
+    On Error GoTo ErrHandler
+    
+    ' SET Outlook APPLICATION OBJECT.
+    Dim objOutlook As Object
+    Set objOutlook = CreateObject("Outlook.Application")
+    
+    ' CREATE EMAIL OBJECT.
+    Dim objEmail As Object
+    Set objEmail = objOutlook.CreateItem(olMailItem)
+
+    With objEmail
+        .to = "arunbanik21@rediffmail.com"
+        .Subject = "This is a test message from Arun Banik"
+        .Body = "Hi there"
+        .Display   		' Display the message in Outlook.
+    End With
+    
+    ' CLEAR.
+    Set objEmail = Nothing:    Set objOutlook = Nothing
+        
+ErrHandler:
+    '
+End Sub
