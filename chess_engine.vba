@@ -67,7 +67,8 @@ End Sub
 
 Sub getPlayersEmails()
     Dim url As String
-    url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQFNtWF9w__Wt3v6E_u7RkpOc6Qy654EndqgdaZBGECLk-18O4mEtIJe7KnD3IT-HV8Ctq_p1TbyWf4/pubhtml?gid=1289366372&single=true"
+    url = Sheet5.Range("A1").Value
+    'MsgBox url
     
     CreateWebQuery Sheet4.Range("A1"), url
     'Sheet5.Columns(1).Hidden = False
