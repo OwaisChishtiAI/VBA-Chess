@@ -13,6 +13,8 @@ var white_queen = "https://upload.wikimedia.org/wikipedia/commons/4/49/Chess_qlt
 var black_king = "https://upload.wikimedia.org/wikipedia/commons/e/e3/Chess_kdt60.png";
 var white_king = "https://upload.wikimedia.org/wikipedia/commons/3/3b/Chess_klt60.png";
 
+var references = {"https://upload.wikimedia.org/wikipedia/commons/c/cd/Chess_pdt60.png" : "black","https://upload.wikimedia.org/wikipedia/commons/8/81/Chess_bdt60.png" : "black","https://upload.wikimedia.org/wikipedia/commons/a/a0/Chess_rdt60.png" : "black","https://upload.wikimedia.org/wikipedia/commons/f/f1/Chess_ndt60.png" : "black","https://upload.wikimedia.org/wikipedia/commons/a/af/Chess_qdt60.png" : "black","https://upload.wikimedia.org/wikipedia/commons/e/e3/Chess_kdt60.png" : "black", "https://upload.wikimedia.org/wikipedia/commons/0/04/Chess_plt60.png" : "white","https://upload.wikimedia.org/wikipedia/commons/9/9b/Chess_blt60.png" : "white","https://upload.wikimedia.org/wikipedia/commons/5/5c/Chess_rlt60.png" : "white","https://upload.wikimedia.org/wikipedia/commons/2/28/Chess_nlt60.png" : "white","https://upload.wikimedia.org/wikipedia/commons/4/49/Chess_qlt60.png" : "white","https://upload.wikimedia.org/wikipedia/commons/3/3b/Chess_klt60.png" : "white"}
+
 var orig_backgrounds = {'F3':"#6aa84f", 'G3':"#d9ead3", 'H3':"#6aa84f", 'I3':"#d9ead3", 'J3':"#6aa84f", 'K3':"#d9ead3", 'L3':"#6aa84f", 'M3':"#d9ead3",
                   'F4':"#d9ead3", 'G4':"#6aa84f", 'H4':"#d9ead3", 'I4':"#6aa84f", 'J4':"#d9ead3", 'K4':"#6aa84f", 'L4':"#d9ead3", 'M4':"#6aa84f",
                   'F5':"#6aa84f", 'G5':"#d9ead3", 'H5':"#6aa84f", 'I5':"#d9ead3", 'J5':"#6aa84f", 'K5':"#d9ead3", 'L5':"#6aa84f", 'M5':"#d9ead3",
@@ -253,9 +255,305 @@ function determine_next_position(piece, curr_loc){
       next_moves["up"] = moveup;
       next_moves["down"] = movedown;
       next_moves['is_pawn'] = "false";
-      Logger.log("MOVES UNDER");
-      Logger.log(next_moves);
     }
+
+    // For BISHOP
+  if(piece == "https://upload.wikimedia.org/wikipedia/commons/8/81/Chess_bdt60.png" ||
+      piece == "https://upload.wikimedia.org/wikipedia/commons/9/9b/Chess_blt60.png"){
+        // Evaluating Left and Right UPs
+        var cur_loc_alpha_index = alphabets.indexOf(alpha_num[0]);
+        var cur_loc_number_index = numbers.indexOf(alpha_num[1]);
+        if(cur_loc_alpha_index != 0 && cur_loc_number_index != 0){ // main left up condition H.index != 0
+          var moveleft = [];
+          var j = 1;
+          for(let i = cur_loc_alpha_index-1; i >= 0 ; i--){ // i = 2-1 = 1
+            if(alphabets[i] != undefined && numbers[cur_loc_number_index-j] != undefined){
+              moveleft.push(alphabets[i]+numbers[cur_loc_number_index-j])
+              j = j + 1;
+            }
+          }
+          Logger.log("BISHOP go LEFT " + moveleft);
+        }
+        else{
+          Logger.log("BISHOP Cannot go LEFT");
+          var moveleft = "";
+        }
+        if(cur_loc_alpha_index != 7 && cur_loc_number_index != 0){ // main right up condition
+          var moveright = [];
+          var j = 1;
+          for(let i = cur_loc_alpha_index+1; i <= 7 ; i++){
+            if(alphabets[i] != undefined && numbers[cur_loc_number_index-j] != undefined){
+              moveright.push(alphabets[i]+numbers[cur_loc_number_index-j]);
+              j = j + 1;
+            }
+          }
+          Logger.log("BISHOP go RIGHT " + moveright);
+        }
+        else{
+          Logger.log("BISHOP Cannot go RIGHT");
+          var moveright = "";
+        }
+
+        // Evaluating Left and Right DOWNs
+        if(cur_loc_alpha_index != 0 && cur_loc_number_index != 7){ // main left up condition
+          var moveup = [];
+          var j = 1;
+          for(let i = cur_loc_alpha_index-1; i >= 0 ; i--){
+            if(alphabets[i] != undefined && numbers[cur_loc_number_index+j] != undefined){
+              moveup.push(alphabets[i]+numbers[cur_loc_number_index+j]);
+              j = j + 1;
+            }
+          }
+          Logger.log("BISHOP go UP " + moveup);
+        }
+        else{
+          Logger.log("BISHOP Cannot go UP");
+          var moveup = "";
+        }
+        if(cur_loc_alpha_index != 7 && cur_loc_number_index != 7){ // main left up condition
+          var movedown = [];
+          var j = 1;
+          for(let i = cur_loc_alpha_index+1; i <= 7 ; i++){
+            if(alphabets[i] != undefined && numbers[cur_loc_number_index+j] != undefined){
+              movedown.push(alphabets[i]+numbers[cur_loc_number_index+j])
+              j = j + 1;
+            }
+          }
+          Logger.log("BISHOP go DOWN " + movedown);
+        }
+        else{
+          Logger.log("BISHOP Cannot go DOWN");
+          var movedown = "";
+        }
+      next_moves["left"] = moveleft;
+      next_moves["right"] = moveright;
+      next_moves["up"] = moveup;
+      next_moves["down"] = movedown;
+      next_moves['is_pawn'] = "false";
+    }
+
+    // For QUEEN (COMBO OF BISHOP AND ROOK)
+  if(piece == "https://upload.wikimedia.org/wikipedia/commons/a/af/Chess_qdt60.png" ||
+      piece == "https://upload.wikimedia.org/wikipedia/commons/4/49/Chess_qlt60.png"){
+        // Evaluating Left and Right UPs
+        var cur_loc_alpha_index = alphabets.indexOf(alpha_num[0]);
+        var cur_loc_number_index = numbers.indexOf(alpha_num[1]);
+        var moveleft = [];
+        var moveright = [];
+        var movedown = [];
+        var moveup = [];
+        var moveleft2 = [];
+        var moveright2 = [];
+        var movedown2 = [];
+        var moveup2 = [];
+        if(cur_loc_alpha_index != 0 && cur_loc_number_index != 0){ // main left up 
+          var j = 1;
+          for(let i = cur_loc_alpha_index-1; i >= 0 ; i--){ // i = 2-1 = 1
+            if(alphabets[i] != undefined && numbers[cur_loc_number_index-j] != undefined){
+              moveleft.push(alphabets[i]+numbers[cur_loc_number_index-j])
+              j = j + 1;
+            }
+          }
+          Logger.log("QUEEN go UP LEFT " + moveleft);
+        }
+        if(cur_loc_alpha_index != 0){
+          for(let i = cur_loc_alpha_index-1 ; i >= 0 ; i--){
+            moveleft2.push(alphabets[i]+alpha_num[1]);
+          }
+          Logger.log("QUEEN go LEFT " + moveleft2);
+        }
+        if(moveleft == []){
+          Logger.log("QUEEN Cannot go LEFT");
+          var moveleft = "";
+        }
+        if(moveleft2 == []){
+          Logger.log("QUEEN Cannot go LEFT 2");
+          var moveleft2 = "";
+        }
+        if(cur_loc_alpha_index != 7 && cur_loc_number_index != 0){ // main right up condition
+          var j = 1;
+          for(let i = cur_loc_alpha_index+1; i <= 7 ; i++){
+            if(alphabets[i] != undefined && numbers[cur_loc_number_index-j] != undefined){
+              moveright.push(alphabets[i]+numbers[cur_loc_number_index-j]);
+              j = j + 1;
+            }
+          }
+          Logger.log("QUEEN go UP RIGHT " + moveright);
+        }
+        if(cur_loc_alpha_index != alphabets.length-1){
+          for(let i = cur_loc_alpha_index+1 ; i <= alphabets.length-1 ; i++){
+            moveright2.push(alphabets[i]+alpha_num[1]);
+          }
+          Logger.log("QUEEN go RIGHT " + moveright2);
+        }
+        if(moveright == []){
+          Logger.log("QUEEN Cannot go RIGHT");
+          var moveright = "";
+        }
+        if(moveright2 == []){
+          Logger.log("QUEEN Cannot go RIGHT 2");
+          var moveright2 = "";
+        }
+
+        // Evaluating Left and Right DOWNs
+        if(cur_loc_alpha_index != 0 && cur_loc_number_index != 7){ // main left up condition
+          var j = 1;
+          for(let i = cur_loc_alpha_index-1; i >= 0 ; i--){
+            if(alphabets[i] != undefined && numbers[cur_loc_number_index+j] != undefined){
+              moveup.push(alphabets[i]+numbers[cur_loc_number_index+j]);
+              j = j + 1;
+            }
+          }
+          Logger.log("QUEEN go UP left" + moveup);
+        }
+        if(cur_loc_number_index != 0){
+          for(let i = cur_loc_number_index-1 ; i >= 0 ; i--){
+            moveup2.push(alpha_num[0]+numbers[i]);
+          }
+          Logger.log("QUEEN go UP " + moveup2);
+        }
+        if(moveup == []){
+          Logger.log("QUEEN Cannot go UP");
+          var moveup = "";
+        }
+        if(moveup2 == []){
+          Logger.log("QUEEN Cannot go UP 2");
+          var moveup2 = "";
+        }
+        if(cur_loc_alpha_index != 7 && cur_loc_number_index != 7){ // main left up condition
+          var j = 1;
+          for(let i = cur_loc_alpha_index+1; i <= 7 ; i++){
+            if(alphabets[i] != undefined && numbers[cur_loc_number_index+j] != undefined){
+              movedown.push(alphabets[i]+numbers[cur_loc_number_index+j])
+              j = j + 1;
+            }
+          }
+          Logger.log("QUEEN go DOWN right" + movedown);
+        }
+        if(cur_loc_number_index != numbers.length-1){
+          for(let i = cur_loc_number_index+1 ; i <= alphabets.length-1 ; i++){
+            movedown2.push(alpha_num[0]+numbers[i]);
+          }
+          Logger.log("QUEEN go DOWN " + movedown2);
+        }
+        if(movedown == []){
+          Logger.log("QUEEN Cannot go DOWN");
+          var movedown = "";
+        }
+        if(movedown2 == []){
+          Logger.log("QUEEN Cannot go DOWN 2");
+          var movedown2 = "";
+        }
+      next_moves["left"] = moveleft;
+      next_moves["right"] = moveright;
+      next_moves["up"] = moveup;
+      next_moves["down"] = movedown;
+      next_moves["left2"] = moveleft2;
+      next_moves["right2"] = moveright2;
+      next_moves["up2"] = moveup2;
+      next_moves["down2"] = movedown2;
+      next_moves['is_pawn'] = "queen";
+    }
+
+    // For KING (COMBO OF BISHOP AND ROOK till ONE STEP)
+  if(piece == "https://upload.wikimedia.org/wikipedia/commons/e/e3/Chess_kdt60.png" ||
+      piece == "https://upload.wikimedia.org/wikipedia/commons/3/3b/Chess_klt60.png"){
+        // Evaluating Left and Right UPs
+        var cur_loc_alpha_index = alphabets.indexOf(alpha_num[0]);
+        var cur_loc_number_index = numbers.indexOf(alpha_num[1]);
+        var moveleft = [];
+        var moveright = [];
+        var movedown = [];
+        var moveup = [];
+        if(cur_loc_alpha_index != 0 && cur_loc_number_index != 0){ // main left up 
+          var j = 1;
+          for(let i = cur_loc_alpha_index-1; i >= cur_loc_alpha_index-1 ; i--){ // i = 2-1 = 1
+            if(alphabets[i] != undefined && numbers[cur_loc_number_index-j] != undefined){
+              moveleft.push(alphabets[i]+numbers[cur_loc_number_index-j])
+              j = j + 1;
+            }
+          }
+          Logger.log("KING go UP LEFT " + moveleft);
+        }
+        if(cur_loc_alpha_index != 0){
+          for(let i = cur_loc_alpha_index-1 ; i >= cur_loc_alpha_index-1 ; i--){
+            moveleft.push(alphabets[i]+alpha_num[1]);
+          }
+          Logger.log("KING go LEFT " + moveleft);
+        }
+        if(moveleft == []){
+          Logger.log("KING Cannot go LEFT");
+          var moveleft = "";
+        }
+        if(cur_loc_alpha_index != 7 && cur_loc_number_index != 0){ // main right up condition
+          var j = 1;
+          for(let i = cur_loc_alpha_index+1; i <= cur_loc_alpha_index+1 ; i++){
+            if(alphabets[i] != undefined && numbers[cur_loc_number_index-j] != undefined){
+              moveright.push(alphabets[i]+numbers[cur_loc_number_index-j]);
+              j = j + 1;
+            }
+          }
+          Logger.log("KING go UP RIGHT " + moveright);
+        }
+        if(cur_loc_alpha_index != alphabets.length-1){
+          for(let i = cur_loc_alpha_index+1 ; i <= alphabets.length-cur_loc_alpha_index+1 ; i++){
+            moveright.push(alphabets[i]+alpha_num[1]);
+          }
+          Logger.log("KING go RIGHT " + moveright);
+        }
+        if(moveright == []){
+          Logger.log("KING Cannot go RIGHT");
+          var moveright = "";
+        }
+
+        // Evaluating Left and Right DOWNs
+        if(cur_loc_alpha_index != 0 && cur_loc_number_index != 7){ // main left up condition
+          var j = 1;
+          for(let i = cur_loc_alpha_index-1; i >= cur_loc_alpha_index-1 ; i--){
+            if(alphabets[i] != undefined && numbers[cur_loc_number_index+j] != undefined){
+              moveup.push(alphabets[i]+numbers[cur_loc_number_index+j]);
+              j = j + 1;
+            }
+          }
+          Logger.log("KING go UP left" + moveup);
+        }
+        if(cur_loc_number_index != 0){
+          for(let i = cur_loc_number_index-1 ; i >= cur_loc_number_index-1 ; i--){
+            moveup.push(alpha_num[0]+numbers[i]);
+          }
+          Logger.log("KING go UP " + moveup);
+        }
+        if(moveup == []){
+          Logger.log("KING Cannot go UP");
+          var moveup = "";
+        }
+        if(cur_loc_alpha_index != 7 && cur_loc_number_index != 7){ // main left up condition
+          var j = 1;
+          for(let i = cur_loc_alpha_index+1; i <= cur_loc_alpha_index+1 ; i++){
+            if(alphabets[i] != undefined && numbers[cur_loc_number_index+j] != undefined){
+              movedown.push(alphabets[i]+numbers[cur_loc_number_index+j])
+              j = j + 1;
+            }
+          }
+          Logger.log("KING go DOWN right" + movedown);
+        }
+        if(cur_loc_number_index != numbers.length-1){
+          for(let i = cur_loc_number_index+1 ; i <= cur_loc_number_index+1 ; i++){
+            movedown.push(alpha_num[0]+numbers[i]);
+          }
+          Logger.log("KING go DOWN " + movedown);
+        }
+        if(movedown == []){
+          Logger.log("KING Cannot go DOWN");
+          var movedown = "";
+        }
+      next_moves["left"] = moveleft;
+      next_moves["right"] = moveright;
+      next_moves["up"] = moveup;
+      next_moves["down"] = movedown;
+      next_moves['is_pawn'] = "false";
+    }
+
   return next_moves;
 }
 
@@ -269,6 +567,13 @@ function start_board(){
     var formulaCell = formulaSheet.getRange(key);
     formulaCell.setFormula('=IMAGE("' + initial_positions[key] + '")');
   });
+
+  var score_postions = {"B4": white_pawn, "C4" : black_pawn, "B5": white_knight, "C5" : black_knight, "B6": white_bishop, "C6" : black_bishop, "B7": white_rook, "C7" : black_rook, "B8": white_queen, "C8" : black_queen, "B9": white_king, "C9" : black_king}
+Object.keys(score_postions).forEach(function(key) {
+  var formulaCell = formulaSheet.getRange(key);
+  formulaCell.setFormula('=IMAGE("' + score_postions[key] + '")');
+});
+formulaSheet.getRange("P3").setFormula('=IMAGE("")');
 }
 var NEXT_MOVES = 'F997';
 var IS_PAWN = "F999";
@@ -276,12 +581,22 @@ var PREV_POSITION = "F1000";
 
 function test(){
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  ss.getSheetByName("Executions").getRange(IS_PAWN).setValue("others");
+  var sheet = ss.getSheetByName("Chess");
+  var temp_formula = sheet.getRange('I10').getFormula();
+  temp_formula = temp_formula.split('=IMAGE("')[1].split('")')[0];
+  Logger.log(temp_formula);
+  if (!temp_formula.endsWith('.png')){
+    Logger.log("YES");
+  }
+  else{
+    Logger.log("NO");
+  }
 }
 
 
 function pickup(){
   var moves = ['left', 'right', 'up', 'down'];
+  var queen_moves = ['left', 'right', 'up', 'down', 'left2', 'right2', 'up2', 'down2'];
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName("Chess");
   var eaoi = sheet.getActiveRange().getA1Notation();
@@ -290,18 +605,79 @@ function pickup(){
   try{
     var link = formula.split('=IMAGE("')[1].split('")')[0];
     sheet.getRange(eaoi).setFormula('=IMAGE("")');
-    sheet.getRange('B8').setFormula('=IMAGE("' + link + '")');
+    sheet.getRange('P3').setFormula('=IMAGE("' + link + '")');
+    var possible_moves = [];
+    var red_moves = [];
     var next_moves = determine_next_position(link, eaoi);
+    if(next_moves['is_pawn'] == "queen"){
+      for(let i in queen_moves){
+        if(next_moves[queen_moves[i]] != "" && next_moves[queen_moves[i]]){
+          if(next_moves[queen_moves[i]] instanceof Array){
+            for(let j in next_moves[queen_moves[i]]){
+              try{
+                var temp_formula = sheet.getRange(next_moves[queen_moves[i]][j]).getFormula();
+                temp_formula = temp_formula.split('=IMAGE("')[1].split('")')[0];
+                if (!temp_formula.endsWith('.png')){
+                  possible_moves.push(next_moves[queen_moves[i]][j]);  
+                }
+                else{
+                  break;
+                }
+              }
+              catch{
+                possible_moves.push(next_moves[queen_moves[i]][j]);
+              }
+            }
+          }
+        }
+      }
+    }
+    else{
+      for(let i in moves){
+        if(next_moves[moves[i]] != "" && next_moves[moves[i]]){
+          if(next_moves[moves[i]] instanceof Array){
+            for(let j in next_moves[moves[i]]){
+              try{
+                var temp_formula = sheet.getRange(next_moves[moves[i]][j]).getFormula();
+                temp_formula = temp_formula.split('=IMAGE("')[1].split('")')[0];
+                if (!temp_formula.endsWith('.png')){
+                  possible_moves.push(next_moves[moves[i]][j]);  
+                }
+                else{
+                  break;
+                }
+              }
+              catch{
+                possible_moves.push(next_moves[moves[i]][j]);
+              }
+            }
+          }
+          else{
+            try{
+              var tem_formula = sheet.getRange(next_moves[moves[i]]).getFormula();
+              tem_formula = tem_formula.split('=IMAGE("')[1].split('")')[0];
+              if (!tem_formula.endsWith('.png')){
+                possible_moves.push(next_moves[moves[i]]);  
+              }
+            }
+            catch{
+              possible_moves.push(next_moves[moves[i]]);
+            }
+          }
+        }
+      }
+    }
     Logger.log("MOVES");
     Logger.log(next_moves);
+    Logger.log(possible_moves);
     // Coloring possbile moves
     if(next_moves['is_pawn'] == "true"){
       ss.getSheetByName("Executions").getRange(IS_PAWN).setValue("pawn");
       var next_moves_setr = [];
-      for(let i in moves){
-        if(next_moves[moves[i]] != "" && next_moves[moves[i]]){
-          next_moves_setr.push(next_moves[moves[i]]);
-          sheet.getRange(next_moves[moves[i]]).setBackground("yellow");
+      for(let i in possible_moves){
+        if(possible_moves[i] != "" && possible_moves[i]){
+          next_moves_setr.push(possible_moves[i]);
+          sheet.getRange(possible_moves[i]).setBackground("yellow");
         }
       }
       if(next_moves_setr.length != 0){
@@ -312,12 +688,10 @@ function pickup(){
     else{
       ss.getSheetByName("Executions").getRange(IS_PAWN).setValue("others");
       var next_moves_setr = [];
-      for(let i in moves){
-        if(next_moves[moves[i]] != [] && next_moves[moves[i]]){
-          for(let j in next_moves[moves[i]]){
-            next_moves_setr.push(next_moves[moves[i]][j]);
-            sheet.getRange(next_moves[moves[i]][j]).setBackground("yellow");
-          }
+      for(let i in possible_moves){
+        if(possible_moves[i] != "" && possible_moves[i]){
+          next_moves_setr.push(possible_moves[i]);
+          sheet.getRange(possible_moves[i]).setBackground("yellow");
         }
       }
       if(next_moves_setr.length != 0){
@@ -340,13 +714,13 @@ function move(){
   // checking if moves is of PAWN
   var is_pawn = ss.getSheetByName("Executions").getRange(IS_PAWN).getValue();
   if(is_pawn == "pawn"){
-    ss.getSheetByName("Executions").getRange(IS_PAWN).setValue("notpawn");
     var NEXT_MOVES_POS = ss.getSheetByName("Executions").getRange(NEXT_MOVES).getValue().split(",");
     if(NEXT_MOVES_POS != []){
       if(NEXT_MOVES_POS.includes(aoi)){
-        var formula = sheet.getRange('B8').getFormula();
+        ss.getSheetByName("Executions").getRange(IS_PAWN).setValue("notpawn");
+        var formula = sheet.getRange('P3').getFormula();
         var link = formula.split('=IMAGE("')[1].split('")')[0];
-        sheet.getRange('B8').setFormula('=IMAGE("")');
+        sheet.getRange('P3').setFormula('=IMAGE("")');
         sheet.getRange(aoi).setFormula('=IMAGE("' + link + '")');
         //setting original colors
         for(let i in NEXT_MOVES_POS){
@@ -362,13 +736,13 @@ function move(){
     }
   }
   else if(is_pawn == "others"){
-    ss.getSheetByName("Executions").getRange(IS_PAWN).setValue("notothers");
     var NEXT_MOVES_POS = ss.getSheetByName("Executions").getRange(NEXT_MOVES).getValue().split(",");
     if(NEXT_MOVES_POS != []){
       if(NEXT_MOVES_POS.includes(aoi)){
-        var formula = sheet.getRange('B8').getFormula();
+        ss.getSheetByName("Executions").getRange(IS_PAWN).setValue("notothers");
+        var formula = sheet.getRange('P3').getFormula();
         var link = formula.split('=IMAGE("')[1].split('")')[0];
-        sheet.getRange('B8').setFormula('=IMAGE("")');
+        sheet.getRange('P3').setFormula('=IMAGE("")');
         sheet.getRange(aoi).setFormula('=IMAGE("' + link + '")');
         //setting original colors
         for(let i in NEXT_MOVES_POS){
@@ -389,10 +763,10 @@ function cancel(){
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var eaoi = ss.getSheetByName("Executions").getRange(PREV_POSITION).getValue();
   var sheet = ss.getSheetByName("Chess");
-  var formula = sheet.getRange('B8').getFormula();
+  var formula = sheet.getRange('P3').getFormula();
   try{
     var link = formula.split('=IMAGE("')[1].split('")')[0];
-    sheet.getRange('B8').setFormula('=IMAGE("")');
+    sheet.getRange('P3').setFormula('=IMAGE("")');
     sheet.getRange(eaoi).setFormula('=IMAGE("' + link + '")');
     var NEXT_MOVES_POS = ss.getSheetByName("Executions").getRange(NEXT_MOVES).getValue().split(",");
     for(let i in NEXT_MOVES_POS){
