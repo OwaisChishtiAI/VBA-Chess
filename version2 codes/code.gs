@@ -25,9 +25,9 @@ var orig_backgrounds = {'F3':"#6aa84f", 'G3':"#d9ead3", 'H3':"#6aa84f", 'I3':"#d
                   'F10':"#d9ead3", 'G10':"#6aa84f", 'H10':"#d9ead3", 'I10':"#6aa84f", 'J10':"#d9ead3", 'K10':"#6aa84f", 'L10':"#d9ead3", 'M10':"#6aa84f"};
 
 var black_occupied_positions = ['R3', 'S3', 'T3', 'U3',
-                                  'R4', 'S4', 'T4', 'U4',
-                                  'R5', 'S5', 'T5', 'U5',
-                                  'R6', 'S6', 'T6', 'U6'];
+                                'R4', 'S4', 'T4', 'U4',
+                                'R5', 'S5', 'T5', 'U5',
+                                'R6', 'S6', 'T6', 'U6'];
 var white_occupied_positions = ['R7', 'S7', 'T7', 'U7',
                                 'R8', 'S8', 'T8', 'U8',
                                 'R9', 'S9', 'T9', 'U9',
@@ -68,15 +68,10 @@ function determine_next_position(piece, curr_loc){
     // Evaluating Left and Right
     var cur_loc_alpha_index = alphabets.indexOf(alpha_num[0]);
     var cur_loc_number_index = numbers.indexOf(alpha_num[1]);
+    var pawn_red_moves = [];
     if(cur_loc_alpha_index != 0 && cur_loc_number_index != 0){ // main left up 
-      var j = 1;
-      for(let i = cur_loc_alpha_index-1; i >= cur_loc_alpha_index-1 ; i--){ // i = 2-1 = 1
-        if(alphabets[i] != undefined && numbers[cur_loc_number_index-j] != undefined){
-          moveleftup = alphabets[i]+numbers[cur_loc_number_index-j];
-          j = j + 1;
-        }
-      }
-      Logger.log("PAWN go UP LEFT " + moveleftup);
+      pawn_red_moves.push(alphabets[cur_loc_alpha_index-1] + numbers[cur_loc_number_index-1]);
+      
     }
     if(cur_loc_alpha_index != 0){
       var moveleft = alphabets[cur_loc_alpha_index-1]+alpha_num[1];
@@ -86,20 +81,10 @@ function determine_next_position(piece, curr_loc){
       Logger.log("PAWN Cannot go LEFT");
       var moveleft = "";
     }
-    if(moveleftup == []){
-      Logger.log("PAWN Cannot go LEFT UP");
-      var moveleftup = "";
-    }
 
     if(cur_loc_alpha_index != 7 && cur_loc_number_index != 0){ // main right up condition
-      var j = 1;
-      for(let i = cur_loc_alpha_index+1; i <= cur_loc_alpha_index+1 ; i++){
-        if(alphabets[i] != undefined && numbers[cur_loc_number_index-j] != undefined){
-          moverightup = alphabets[i]+numbers[cur_loc_number_index-j];
-          j = j + 1;
-        }
-      }
-      Logger.log("PAWN go UP RIGHT " + moverightup);
+      pawn_red_moves.push(alphabets[cur_loc_alpha_index+1] + numbers[cur_loc_number_index-1]);
+      
     }
     if(cur_loc_alpha_index != alphabets.length-1){
       var moveright = alphabets[cur_loc_alpha_index+1]+alpha_num[1];
@@ -109,35 +94,40 @@ function determine_next_position(piece, curr_loc){
       Logger.log("PAWN Cannot go RIGHT");
       var moveright = "";
     }
-    if(moverightup == []){
-      Logger.log("PAWN Cannot go RIGHT UP");
-      var moverightup = "";
-    }
 
     // Evaluating Up and Down
-    var cur_loc_alpha_index = alphabets.indexOf(alpha_num[0]);
-    var cur_loc_number_index = numbers.indexOf(alpha_num[1]);
-    //
-    if(cur_loc_alpha_index != 0){
-      var moveup = alpha_num[0] + numbers[cur_loc_alpha_index-1];
+    if(cur_loc_alpha_index != 0 && cur_loc_number_index != 7){ // main down left condition
+      pawn_red_moves.push(alphabets[cur_loc_alpha_index-1] + numbers[cur_loc_number_index+1]);
+      
+    }
+    if(cur_loc_number_index != 0){
+      var moveup = alpha_num[0] + numbers[cur_loc_number_index-1];
       Logger.log("PAWN go UP " + moveup);
     }
     else{
       Logger.log("PAWN Cannot go UP");
       var moveup = "";
     }
-    if(cur_loc_alpha_index != numbers.length-1){
-      var movedown = alpha_num[0] + numbers[cur_loc_alpha_index+1];
+    if(cur_loc_alpha_index != 7 && cur_loc_number_index != 7){ // main down right condition
+      pawn_red_moves.push(alphabets[cur_loc_alpha_index+1] + numbers[cur_loc_number_index+1]);
+      
+    }
+    if(cur_loc_number_index != 7){
+      var movedown = alpha_num[0] + numbers[cur_loc_number_index+1];
       Logger.log("PAWN go DOWN " + movedown);
     }
     else{
       Logger.log("PAWN Cannot go DOWN");
       var movedown = "";
     }
-    next_moves["left"] = moveleft;
-    next_moves["right"] = moveright;
+    if(pawn_red_moves == []){
+      Logger.log("No Red Moves for PAWN");
+    }
+    next_moves["left"] = "";
+    next_moves["right"] = "";
     next_moves["up"] = moveup;
     next_moves["down"] = movedown;
+    next_moves["reds"] = pawn_red_moves;
     next_moves['is_pawn'] = "true";
   }
   
@@ -607,6 +597,7 @@ var IS_PAWN = "F999";
 var PREV_POSITION = "F1000";
 var BLACK_OCCUPIED_POS = "F995";
 var WHITE_OCCUPIED_POS = "F994";
+var IS_GAME_STARTED = "F993";
 
 function start_board(){
   var initial_positions = {'F3':black_rook, "G3":black_knight, "H3":black_bishop, "I3":black_queen, "J3":black_king, "K3":black_bishop, "L3":black_knight, "M3":black_rook,'F4':black_pawn, "G4":black_pawn, "H4":black_pawn, "I4":black_pawn, "J4":black_pawn, "K4":black_pawn, "L4":black_pawn, "M4":black_pawn,'F9':white_pawn, "G9":white_pawn, "H9":white_pawn, "I9":white_pawn, "J9":white_pawn, "K9":white_pawn, "L9":white_pawn, "M9":white_pawn,'F10':white_rook, "G10":white_knight, "H10":white_bishop, "I10":white_queen, "J10":white_king, "K10":white_bishop, "L10":white_knight, "M10":white_rook}
@@ -631,18 +622,32 @@ function start_board(){
   }
   ss.getSheetByName("Executions").getRange(WHITE_OCCUPIED_POS).setValue(white_occupied_positions[0]);
   ss.getSheetByName("Executions").getRange(BLACK_OCCUPIED_POS).setValue(black_occupied_positions[0]);
+  ss.getSheetByName("Executions").getRange(IS_GAME_STARTED).setValue("yes");
+  var empty_board_positions = ['F5', 'F6', 'F7', 'F8',
+                                'G5', 'G6', 'G7', 'G8',
+                                'H5', 'H6', 'H7', 'H8',
+                                'I5', 'I6', 'I7', 'I8',
+                                'J5', 'J6', 'J7', 'J8',
+                                'K5', 'K6', 'K7', 'K8',
+                                'L5', 'L6', 'L7', 'L8',
+                                'M5', 'M6', 'M7', 'M8'];
+  for(let ebp in empty_board_positions){
+    ss.getSheetByName("Chess").getRange(empty_board_positions[ebp]).setFormula('=IMAGE("")');
+  }
+  ss.getSheetByName("Chess").getRange('A16').setValue('');
+  ss.getSheetByName("Chess").getRange('D16').setValue('');
 }
 
 function get_occupying_position(piece){
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var wop = ss.getSheetByName("Executions").getRange(WHITE_OCCUPIED_POS).getValue();
   var bop = ss.getSheetByName("Executions").getRange(BLACK_OCCUPIED_POS).getValue();
-  ss.getSheetByName("Executions").getRange(WHITE_OCCUPIED_POS).setValue(white_occupied_positions[white_occupied_positions.indexOf(wop) + 1]);
-  ss.getSheetByName("Executions").getRange(BLACK_OCCUPIED_POS).setValue(black_occupied_positions[black_occupied_positions.indexOf(bop) + 1]);
   if(piece == "black"){
+    ss.getSheetByName("Executions").getRange(WHITE_OCCUPIED_POS).setValue(white_occupied_positions[white_occupied_positions.indexOf(wop) + 1]);
     return wop;
   }
   else{
+    ss.getSheetByName("Executions").getRange(BLACK_OCCUPIED_POS).setValue(black_occupied_positions[black_occupied_positions.indexOf(bop) + 1]);
     return bop;
   }
 }
@@ -737,16 +742,41 @@ function pickup(){
             }
           }
           else{
-            try{
-              var tem_formula = sheet.getRange(next_moves[moves[i]]).getFormula();
-              tem_formula = tem_formula.split('=IMAGE("')[1].split('")')[0];
-              if (!tem_formula.endsWith('.png')){
-                possible_moves.push(next_moves[moves[i]]);  
+            //
+          }
+        }
+      }
+      if(next_moves['is_pawn'] == "true"){
+        if(references[link] == "white"){
+          try{
+            var tem_formula = sheet.getRange(next_moves["up"]).getFormula();
+            tem_formula = tem_formula.split('=IMAGE("')[1].split('")')[0];
+            if (!tem_formula.endsWith('.png')){
+              possible_moves.push(next_moves["up"]);
+              if(ss.getSheetByName("Executions").getRange(IS_GAME_STARTED).getValue() == "yes"){
+                possible_moves.push(next_moves["up"][0]+"7");
+                // ss.getSheetByName("Executions").getRange(IS_GAME_STARTED).setValue("no");
               }
             }
-            catch{
-              possible_moves.push(next_moves[moves[i]]);
+          }
+          catch{
+            possible_moves.push(next_moves["up"]);
+          }
+        }
+        else{
+          try{
+            var tem_formula = sheet.getRange(next_moves["down"]).getFormula();
+            tem_formula = tem_formula.split('=IMAGE("')[1].split('")')[0];
+            if (!tem_formula.endsWith('.png')){
+              possible_moves.push(next_moves["down"]);
+              if(ss.getSheetByName("Executions").getRange(IS_GAME_STARTED).getValue() == "yes"){
+                possible_moves.push(next_moves["up"][0]+"6");
+                // ss.getSheetByName("Executions").getRange(IS_GAME_STARTED).setValue("no");
+              }
             }
+          }
+          catch{
+            possible_moves.push(next_moves["down"]);
           }
         }
       }
@@ -759,15 +789,35 @@ function pickup(){
     if(next_moves['is_pawn'] == "true"){
       ss.getSheetByName("Executions").getRange(IS_PAWN).setValue("pawn");
       var next_moves_setr = [];
+      var red_moves_setr = [];
       for(let i in possible_moves){
         if(possible_moves[i] != "" && possible_moves[i]){
           next_moves_setr.push(possible_moves[i]);
           sheet.getRange(possible_moves[i]).setBackground("yellow");
         }
       }
+      var pawn_red_moves = next_moves['reds'];
+      for(let j in pawn_red_moves){
+        try{
+          var tem_formula = sheet.getRange(pawn_red_moves[j]).getFormula();
+          tem_formula = tem_formula.split('=IMAGE("')[1].split('")')[0];
+          if((references[link] == "white" && references[tem_formula] == "black")||
+            (references[link] == "black" && references[tem_formula] == "white")){
+              sheet.getRange(pawn_red_moves[j]).setBackground("red");
+              red_moves_setr.push(pawn_red_moves[j]);
+          }
+        }
+        catch{
+          //
+        }
+      }
+      // Browser.msgBox(pawn_red_moves);
       if(next_moves_setr.length != 0){
         ss.getSheetByName("Executions").getRange(NEXT_MOVES).setValue(next_moves_setr.toString());
         ss.getSheetByName("Executions").getRange(PREV_POSITION).setValue(eaoi);
+      }
+      if(red_moves_setr.length != 0){
+        ss.getSheetByName("Executions").getRange(RED_MOVES).setValue(red_moves_setr.toString());
       }
     }
     else{
@@ -810,6 +860,7 @@ function move(){
   var is_pawn = ss.getSheetByName("Executions").getRange(IS_PAWN).getValue();
   if(is_pawn == "pawn"){
     var NEXT_MOVES_POS = ss.getSheetByName("Executions").getRange(NEXT_MOVES).getValue().split(",");
+    var RED_MOVES_POS = ss.getSheetByName("Executions").getRange(RED_MOVES).getValue().split(",");
     if(NEXT_MOVES_POS != []){
       if(NEXT_MOVES_POS.includes(aoi)){
         ss.getSheetByName("Executions").getRange(IS_PAWN).setValue("notpawn");
@@ -822,13 +873,56 @@ function move(){
           sheet.getRange(NEXT_MOVES_POS[i]).setBackground(orig_backgrounds[NEXT_MOVES_POS[i]]);
         }
       }
+      else if(RED_MOVES_POS.includes(aoi)){
+        ss.getSheetByName("Executions").getRange(IS_PAWN).setValue("notpawn");
+        var formula = sheet.getRange('P3').getFormula();
+        var link = formula.split('=IMAGE("')[1].split('")')[0];
+        var is_white_black = references[link];
+        var next_occupying_position = get_occupying_position(is_white_black);
+        var new_formula_of_opponent = sheet.getRange(aoi).getFormula();
+        var new_link_of_opponent = new_formula_of_opponent.split('=IMAGE("')[1].split('")')[0];
+        sheet.getRange(next_occupying_position).setFormula('=IMAGE("' + new_link_of_opponent + '")');
+        // sheet.getRange(aoi).setFormula('=IMAGE("' + link + '")');
+        //setting original colors
+        for(let i in NEXT_MOVES_POS){
+          sheet.getRange(NEXT_MOVES_POS[i]).setBackground(orig_backgrounds[NEXT_MOVES_POS[i]]);
+        }
+        for(let i in RED_MOVES_POS){
+          sheet.getRange(RED_MOVES_POS[i]).setBackground(orig_backgrounds[RED_MOVES_POS[i]]);
+        }
+        sheet.getRange('P3').setFormula('=IMAGE("")');
+        sheet.getRange(aoi).setFormula('=IMAGE("' + link + '")');
+      }
       else{
         Browser.msgBox("Illegal Move!");
+      }
+    }
+    else if(RED_MOVES != []){
+      if(RED_MOVES_POS.includes(aoi)){
+        ss.getSheetByName("Executions").getRange(IS_PAWN).setValue("notpawn");
+        var formula = sheet.getRange('P3').getFormula();
+        var link = formula.split('=IMAGE("')[1].split('")')[0];
+        var is_white_black = references[link];
+        var next_occupying_position = get_occupying_position(is_white_black);
+        var new_formula_of_opponent = sheet.getRange(aoi).getFormula();
+        var new_link_of_opponent = new_formula_of_opponent.split('=IMAGE("')[1].split('")')[0];
+        sheet.getRange(next_occupying_position).setFormula('=IMAGE("' + new_link_of_opponent + '")');
+        // sheet.getRange(aoi).setFormula('=IMAGE("' + link + '")');
+        //setting original colors
+        for(let i in NEXT_MOVES_POS){
+          sheet.getRange(NEXT_MOVES_POS[i]).setBackground(orig_backgrounds[NEXT_MOVES_POS[i]]);
+        }
+        for(let i in RED_MOVES_POS){
+          sheet.getRange(RED_MOVES_POS[i]).setBackground(orig_backgrounds[RED_MOVES_POS[i]]);
+        }
+        sheet.getRange('P3').setFormula('=IMAGE("")');
+        sheet.getRange(aoi).setFormula('=IMAGE("' + link + '")');
       }
     }
     else{
       Browser.msgBox("No Possbile Moves!");
     }
+    ss.getSheetByName("Executions").getRange(IS_GAME_STARTED).setValue("no");
   }
   else if(is_pawn == "others"){
     var NEXT_MOVES_POS = ss.getSheetByName("Executions").getRange(NEXT_MOVES).getValue().split(",");
@@ -898,6 +992,7 @@ function move(){
       Browser.msgBox("No Possbile Moves!");
     }
   }
+  // sendMail();
 }
 
 function cancel(){
@@ -927,10 +1022,11 @@ function setEmails() {
   var emails = findItem();
   // SpreadsheetApp.getActiveSheet().getSheetByName("Chess").getRange('J10').setValue(emails.white);
   // SpreadsheetApp.getActiveSheet().getSheetByName("Chess").getRange('J11').setValue(emails.black);
-  var ss = SpreadsheetApp.getActiveSheet();
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
   var dataSheet = ss.getSheetByName("Chess");
-  dataSheet.getRange('J10').setValue(emails.white);
-  dataSheet.getRange('J11').setValue(emails.black);
+  dataSheet.getRange('A16').setValue(emails.white[0][0]).setFontSize(12).setFontColor("white").setFontWeight("bold");
+  dataSheet.getRange('D16').setValue(emails.black[0][0]).setFontSize(12).setFontColor("white").setFontWeight('bold');
+  Browser.msgBox("Let's Start.");
 }
 
 function setTimer(){
@@ -975,7 +1071,9 @@ function onOpen(e) {
   // Add a custom menu to the spreadsheet.
   // setEmails();
   // setTimer();
+  
   start_board();
+  setEmails();
 }
 
 function sendMail(){
@@ -1080,26 +1178,7 @@ function end_game() {
 }
 
 // *****************************************************************************************
-// AUTOMATING ENGINE CODES
-// light red 1 light gray 2
-var PAWN_H7 = 'H7';
-function pawn_h7(){
-  if(PAWN_H7 == 'H7'){
-    SpreadsheetApp.getActiveSpreadsheet().getRange('H6').setBackground("yellow");
-    SpreadsheetApp.getActiveSpreadsheet().getRange('H5').setBackground("yellow");
-    // SpreadsheetApp.getActiveSpreadsheet().getRange('H5').assignScript("ClickMe");
-  }
-}
 
-function SELECTED_RANGE() {
-  // Logger.log(SpreadsheetApp.getActiveSpreadsheet().getActiveRange().getA1Notation());
-  let pawn = "https://upload.wikimedia.org/wikipedia/commons/8/81/Chess_bdt60.png";
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var formulaSheet = ss.getSheetByName("Chess");
-  var formulaCell = formulaSheet.getRange("D4");
-  formulaCell.setFormula('=IMAGE("https://upload.wikimedia.org/wikipedia/commons/8/81/Chess_bdt60.png")');
-  
-}
 
 
 
